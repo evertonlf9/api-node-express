@@ -17,10 +17,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "sfgsf"
+    "url": "https://github.com/evertonlf9/api-node-express"
   },
   "author": "Everton Ferreira",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
