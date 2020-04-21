@@ -1,0 +1,23 @@
+{
+  "name": "API-NODE-EXPRESS",
+  "version": "0.1.0",
+  "description": "Documentação da API",
+  "title": "Documentação da API-node",
+  "url" : "",
+  "header": {
+    "title": "My own header title",
+    "filename": "header.md"
+  },
+  "footer": {
+    "title": "My own footer title",
+    "filename": "footer.md"
+  },
+  "order": [
+    "GetUser",
+    "PostUser"
+  ],
+  "template": {
+  	"withCompare": true,
+  	"withGenerator": true
+  }
+}
