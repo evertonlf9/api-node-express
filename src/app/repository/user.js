@@ -3,7 +3,7 @@ const db = require('../models');
 const BaseRepository = require('./baseRepository');
 
 class UserRepository {
-
+    // https://sequelize.org/master/manual/raw-queries.html
     static query(sql, queryTypes, sqlCount, queryTypesCount) {
         return new Promise((resolve, reject) => BaseRepository
             .query(db, sql, queryTypes, sqlCount, (queryTypesCount || queryTypes)) 

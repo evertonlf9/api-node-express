@@ -20,7 +20,7 @@ class UserValidator {
 
                 const errors = validationResult(req);
                 if (!errors.isEmpty())
-                    return Errors.handler(res, 422, errors.array());
+                    return Error(res, 422, errors.array());
         
                 RouterUser.create(req, res);
             },
@@ -38,7 +38,7 @@ class UserValidator {
             handler: async (req, res) => {
                 const errors = validationResult(req);
                 if (!errors.isEmpty())
-                    return Errors.handler(res, 422, errors.array());
+                    return Error(res, 422, errors.array());
         
                 RouterUser.getById(req, res);
             },
@@ -61,7 +61,7 @@ class UserValidator {
             handler: async (req, res) => {
                 const errors = validationResult(req);
                 if (!errors.isEmpty())
-                    return Errors.handler(res, 422, errors.array());
+                    return Error(res, 422, errors.array());
         
                 RouterUser.getAll(req, res);
             },
@@ -87,7 +87,7 @@ class UserValidator {
             handler: async (req, res) => {
                 const errors = validationResult(req);
                 if (!errors.isEmpty())
-                    return Errors.handler(res, 422, errors.array());
+                    return Error(res, 422, errors.array());
         
                 RouterUser.update(req, res);
             },

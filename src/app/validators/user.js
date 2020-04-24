@@ -44,7 +44,7 @@ class UserValidator {
 
                 const errors = validationResult(req);
                 if (!errors.isEmpty())
-                    return Errors.handler(res, 422, errors.array());
+                    return Error(res, 422, errors.array());
         
                 RouterUser.createUser(req, res);
             },
@@ -61,7 +61,7 @@ class UserValidator {
             handler: async (req, res) => {
                 const errors = validationResult(req);
                 if (!errors.isEmpty())
-                    return Errors.handler(res, 422, errors.array());
+                    return Error(res, 422, errors.array());
         
                 RouterUser.GetById(req, res);
             },
@@ -83,7 +83,7 @@ class UserValidator {
             handler: async (req, res) => {
                 const errors = validationResult(req);
                 if (!errors.isEmpty())
-                    return Errors.handler(res, 422, errors.array());
+                    return Error(res, 422, errors.array());
         
                 RouterUser.GetUsers(req, res);
             },
@@ -105,7 +105,7 @@ class UserValidator {
             handler: async (req, res) => {
                 const errors = validationResult(req);
                 if (!errors.isEmpty())
-                    return Errors.handler(res, 422, errors.array());
+                    return Error(res, 422, errors.array());
         
                 RouterUser.query(req, res);
             },
@@ -148,7 +148,7 @@ class UserValidator {
             handler: async (req, res) => {
                 const errors = validationResult(req);
                 if (!errors.isEmpty())
-                    return Errors.handler(res, 422, errors.array());
+                    return Error(res, 422, errors.array());
         
                 RouterUser.edit(req, res);
             },
@@ -191,7 +191,7 @@ class UserValidator {
             handler: async (req, res) => {
                 const errors = validationResult(req);                
                 if (!errors.isEmpty())
-                    return Errors.handler(res, 422, errors.array());
+                    return Error(res, 422, errors.array());
         
                 RouterUser.update(req, res);
             },

@@ -5,7 +5,6 @@ class UserRepository {
 
 
     static getAll(query) {
-
         return new Promise((resolve, reject) => 
             BaseRepository
                 .getAll(User, query)

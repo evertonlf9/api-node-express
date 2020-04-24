@@ -8,33 +8,33 @@ let dataFaker = {}
 
 describe('Test the user path', () => {
 
-    test('It should response the router /user the POST method', async (done) => {
+    // test('It should response the router /user the POST method', async (done) => {
 
-        dataFaker = { 
-            first_name: faker.name.firstName(), 
-            last_name: faker.name.lastName(), 
-            rg: "45987.632-5", 
-            cpf:"589.652.324-52", 
-            email: faker.internet.email(), 
-            login: "clauid.ferraz", 
-            password: faker.internet.password() 
-        }
+    //     dataFaker = { 
+    //         first_name: faker.name.firstName(), 
+    //         last_name: faker.name.lastName(), 
+    //         rg: "45987.632-5", 
+    //         cpf:"589.652.324-52", 
+    //         email: faker.internet.email(), 
+    //         login: "clauid.ferraz", 
+    //         password: faker.internet.password() 
+    //     }
 
-        request(app)
-            .post(endpoint)            
-            .type('form')
-            .set('Accept', 'application/json')
-            // .set('ticket-sso', server.TICKET_SSO)
-            .send(dataFaker)            
-            .expect(422)
-            .expect('Content-Type', /json/)            
-            .end(function(err, res) {
-                if (err) return done(err);  
-                assert(res.body.typeError[0].msg, 'Invalid value');
-                assert(res.body.typeError[0].param, 'rg');
-                done();
-            });
-    });
+    //     request(app)
+    //         .post(endpoint)            
+    //         .type('form')
+    //         .set('Accept', 'application/json')
+    //         // .set('ticket-sso', server.TICKET_SSO)
+    //         .send(dataFaker)            
+    //         .expect(422)
+    //         .expect('Content-Type', /json/)            
+    //         .end(function(err, res) {
+    //             if (err) return done(err);  
+    //             assert(res.body.typeError[0].msg, 'Invalid value');
+    //             assert(res.body.typeError[0].param, 'rg');
+    //             done();
+    //         });
+    // });
     
     test('It should response the router /user the POST method', async (done) => {
         const  firstName = faker.name.firstName();

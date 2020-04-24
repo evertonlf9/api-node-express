@@ -203,7 +203,7 @@ class UserController  {
      * @apiSuccess {String} password  Password of the User.
      * 
      * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
+     *     HTTP/1.1 201 OK
      *     {
      *       "id": 1,
      *       "first_name": "John", 
@@ -226,7 +226,7 @@ class UserController  {
     static createUser (req, res)  {        
         UserRepository.createUser(req.body)
         .then((registers) => res.json(registers))
-        .catch((error) => res.json(error));
+        .catch((error) => res.status(201).json(error));
     }
 
     /**
@@ -254,7 +254,7 @@ class UserController  {
     static edit (req, res)  {
         const query = {where: {id:req.params.id}}
         UserRepository.update({...req.body}, query)
-        .then((result) => UserController.getById(req, res))
+        .then((result) => UserController.GetById(req, res))
         .catch((error) => res.json(error));
     }
 
@@ -281,9 +281,9 @@ class UserController  {
      * @apiSuccess {String} password  Password of the User.
      */
     static update (req, res)  {
-        const query = {where: {id:req.params.id}}
+        const query = {where: {id: req.params.id}}
         UserRepository.update({...req.body}, query)
-        .then((result) => UserController.getById(req, res))
+        .then((result) => UserController.GetById(req, res))
         .catch((error) => res.json(error));
     }
 }

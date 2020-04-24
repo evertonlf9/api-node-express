@@ -31,8 +31,8 @@ class User  {
         }
 
         UserRepository.getAll(params)
-        .then((resp) => res.json({ success: true, message:"", totalDocuments: resp.total, response: resp.result}))
-        .catch((err) => res.json({ success: false, message:"", response: []}));
+        .then((resp) => res.json({ message:"", totalDocuments: resp.total, response: resp.result}))
+        .catch((err) => res.json({  error: err, message:"", response: []}));
     } 
 
     /**
@@ -51,8 +51,8 @@ class User  {
      */
     static getById(req, res) {        
         UserRepository.getById(req.params.id)
-        .then((resp) => res.json({ success: true, message:"", response: resp.result}))
-        .catch((err) => res.json({ success: false, message:"", response: []}));
+        .then((resp) => res.json({ message:"", response: resp.result}))
+        .catch((err) => res.json({ error: err, message:"", response: []}));
     }
     
     /**
@@ -69,8 +69,8 @@ class User  {
      */
     static create(req, res) {  
         UserRepository.save(req.body)
-        .then((resp) => res.json({ success: true, message:"", response: resp.result}))
-        .catch((err) => res.json({ success: false, message:"", response: []}));
+        .then((resp) => res.status(201).json({ message:"", response: resp.result}))
+        .catch((err) => res.json({ error: err, message:"", response: []}));
     }
     
     /**
@@ -89,7 +89,7 @@ class User  {
     static update(req, res) {  
         UserRepository.update(req.body, req.params.id)
         .then((resp) => User.getById(req, res))
-        .catch((err) => res.json({ success: false, message:"", response: []}))
+        .catch((err) => res.json({  error: err, message:"", response: []}))
     }
 }
 module.exports = User;

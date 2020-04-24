@@ -10,7 +10,11 @@ const path = require('path');
 const router = require('./app/routers');
 const corsOptions = require('./config/cors.config');
 const connnectdb = require('./app/mongodb/connect/connnectdb');
-const ValidateJWT = require('./app/middlewares/ValidateJWT');
+const isAuthorized = require('./app/middlewares/isAuthorized');
+const Auth = require('./app/middlewares/Auth');
+
+// const jwt = require('express-jwt');
+
 
 const appModule = () => {
 
@@ -19,14 +23,12 @@ const appModule = () => {
 
     app.use(cookieParser());
 
-    app.use(bodyParser.json({ type: 'application/vnd.api+json', extended: true, limit: '100mb' }));
-    app.use(bodyParser.urlencoded({extended: false, limit: '100mb'  }));
+    app.use(bodyParser.urlencoded({extended: false, limit: '100mb'}));
+    app.use(bodyParser.json({ extended: true, limit: '100mb' }));
 
     app.use(methodOverride('X-HTTP-Method-Override'));
     app.use(express.static(path.join(__dirname, 'public')));
     app.use(express.static("doc"));
-    // app.use(express.static(path.join(__dirname, 'doc')));
-    // app.use('/static', express.static('doc'));
 
     app.use(compression());
     
@@ -49,12 +51,17 @@ const appModule = () => {
     });
     app.disable('x-powered-by');
 
-    app.use('*/restrict/*', ValidateJWT);    
-    app.use('/api/v1', router);
+    app.post('/api/authenticate', Auth);
 
-    app.get('/document', (req, res) => {
+    app.get('/api/document', (req, res) => {
         res.sendFile(path.resolve(__dirname, '../doc/index.html'));
     });
+
+    if (process.env.NODE_ENV !== 'test') {
+        app.use('/', isAuthorized);  
+    }
+
+    app.use('/api/v1', router);
 
     return app;
 }

@@ -47,11 +47,10 @@ describe('Test the user path', () => {
             .set('Accept', 'application/json')
             .send(data)
             // .set('ticket-sso', server.TICKET_SSO)           
-            .expect(200)
+            .expect(201)
             .expect('Content-Type', /json/)            
             .end(function(err, res) {
                 if (err) return done(err);  
-                assert(res.body.success, true);
                 assert(res.body.response.username, data.username);
                 assert(res.body.response.email, data.email);
                 done();
@@ -71,7 +70,6 @@ describe('Test the user path', () => {
             .expect('Content-Type', /json/)            
             .end(function(err, res) {
                 if (err) return done(err); 
-                assert(res.body.success, true);
                 assert(res.body.response.username, data.username);
                 assert(res.body.response.email, data.email);
                 done();
