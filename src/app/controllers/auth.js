@@ -38,7 +38,7 @@ const Auth = (req, res, privateKey) => {
                 privateKey, 
                 { algorithm: 'HS256'});
                 
-                res.cookie('x-access-token', token);
+                res.cookie('x-access-token', token, { httpOnly: true, secure: true, signed: true });
                 res.setHeader('x-access-token', `Bearer ${token}`);
 
                 return res.send({message: "successfull authentication"});            

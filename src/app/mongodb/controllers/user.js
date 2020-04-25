@@ -27,7 +27,8 @@ class User  {
         }  
         
         if(req.query.search  && req.query.search !== '') {
-            params = {...params, find: {username: req.query.search } }
+            const regex = new RegExp(["^", req.query.search].join(""), "i");
+            params = {...params, find: {username: regex }}
         }
 
         UserRepository.getAll(params)

@@ -13,6 +13,13 @@
     "sequelize": "cross-env NODE_ENV=production npx sequelize db:migrate",
     "sequelize_dev": "cross-env NODE_ENV=development npx sequelize db:migrate",
     "sequelize_test": "cross-env NODE_ENV=test npx sequelize db:migrate",
+    "sequelize_undo": "cross-env NODE_ENV=test npx sequelize db:migrate:undo",
+    "sequelize_undo_all": "cross-env NODE_ENV=test npx sequelize db:migrate:undo:all",
+    "sequelize_specific": "cross-env NODE_ENV=test npx sequelize db:migrate:undo:all --to XXXXXXXXXXXXXX-create-users.js",
+    "seq_seed": "cross-env NODE_ENV=test npx sequelize seed:generate --name users",
+    "seq_seed_undo": "cross-env NODE_ENV=test npx sequelize db:seed:undo",
+    "seq_seed_undo_all": "cross-env NODE_ENV=test npx sequelize db:seed:undo:all",
+    "seq_seed_specific": "cross-env NODE_ENV=test npx sequelize db:seed:undo --seed name-of-seed-as-in-data",
     "apidoc": "apidoc -e /node_modules -e /public -o ./doc node ./src/app"
   },
   "repository": {
@@ -43,15 +50,17 @@
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "cross-env": "^7.0.2",
-    "csrf": "^3.1.0",
+    "csurf": "^1.11.0",
     "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "express-validator": "^6.4.0",
     "forever": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
     "method-override": "^3.0.0",
     "mongoose": "^5.9.10",
     "mysql2": "^2.1.0",
-    "passport": "^0.4.1",
-    "sequelize": "^5.21.6"
+    "sequelize": "^5.21.6",
+    "session-file-store": "^1.4.0",
+    "uuid": "^7.0.3"
   }
 }

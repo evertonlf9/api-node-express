@@ -6,6 +6,23 @@ const endpoints = require('../config/enpoints');
 
 describe('Test the user path', () => {
 
+    test('It should response the router /nosql/user the GET method paginate', async (done) => {
+
+        request(app)
+            .get(endpoints.nosql.user + '?size=10&page=0&search=luc')     
+            .set('Accept', 'application/json')
+            // .set('ticket-sso', server.TICKET_SSO)           
+            .expect(200)
+            .expect('Content-Type', /json/)            
+            .end(function(err, res) {
+                if (err) return done(err);  
+                console.log(res.body);
+                assert(res.body.response[0].username, 'Lucinda.Morissette');
+                assert(res.body.response[0].email, 'omari_gislason80@hotmail.com');
+                done();
+            });
+    });
+
     test('It should response the router /nosql/user the GET method', async (done) => {
 
         request(app)
@@ -17,7 +34,8 @@ describe('Test the user path', () => {
             .end(function(err, res) {
                 if (err) return done(err);  
                 // console.log(res.body);
-                // assert(res.body.errors[0].msg, 'Invalid value');
+                // assert(res.body.username, 'Lucinda.Morissette');
+                // assert(res.body.email, 'omari_gislason80@hotmail.com');
                 done();
             });
     });
