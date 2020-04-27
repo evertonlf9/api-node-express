@@ -90,38 +90,6 @@ const appModule = () => {
         res.sendFile(path.resolve(__dirname, '../doc/index.html'));
     });
 
-    app.get('/teste2', (req, res) => {
-        res.send(`
-          <h1>Hello World</h1>
-          <form action="/entry" method="POST">
-            <div>
-              <label for="message">Enter a message</label>
-              <input id="message" name="message" type="text" />
-            </div>
-            <input type="submit" value="Submit" />
-          </form>
-        `);
-      });
-
-    app.get('/teste', csrfProtection, (req, res) => {
-        res.send(`
-          <h1>Hello World</h1>
-          <form action="/entry" method="POST">
-            <div>
-              <label for="message">Enter a message</label>
-              <input id="message" name="message" type="text" />
-            </div>
-            <input type="submit" value="Submit" />
-            <input type="hidden" name="_csrf" value="${req.csrfToken()}" />
-          </form>
-        `);
-      });
-      
-      app.post('/entry', csrfProtection, (req, res) => {
-        console.log(`Message received: ${req.body.message}`);
-        res.send(`CSRF token used: ${req.body._csrf}, Message received: ${req.body.message}`);
-      });
-
     if (process.env.NODE_ENV !== 'test') {
         app.use(isAuthorized);  
         app.use('/api/v1', csrfProtection, router);
