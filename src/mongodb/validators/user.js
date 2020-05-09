@@ -1,6 +1,6 @@
 const { check, body, param, validationResult } = require('express-validator'); 
 const RouterUser = require('../controllers/user');
-const Errors = require('../../middlewares/Errors');
+const Errors = require('../../app/middlewares/Errors');
 
 class UserValidator {
     

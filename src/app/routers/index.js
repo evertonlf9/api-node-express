@@ -1,5 +1,5 @@
 const RouterUser = require('./user');
-const RouterMongo = require('../mongodb/routers');
+const RouterMongo = require('../../mongodb/routers');
 const path = require('path');
 
 const router = () => {

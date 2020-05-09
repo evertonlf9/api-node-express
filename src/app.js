@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const methodOverride = require('method-override');
 const fs = require('fs')
-const passport = require('passport');
+// const passport = require('passport');
 const CORS = require('cors');
 const path = require('path');
 const session = require('express-session');
@@ -14,10 +14,10 @@ const uuid = require('uuid');
 
 const router = require('./app/routers');
 const corsOptions = require('./config/cors.config');
-const connnectdb = require('./app/mongodb/connect/connnectdb');
 const isAuthorized = require('./app/middlewares/isAuthorized');
 const Auth = require('./app/middlewares/Auth');
 
+const app = express();
 const useDomainForCookies = process.env.DOMAIN || false
 const host = process.env.HOST || 'localhost'
 
@@ -31,79 +31,92 @@ const csrfProtection = csrf({
     }
   })
 
-const appModule = () => {
-
-    const app = express();
-    connnectdb.connect();
-
-    if (process.env.NODE_ENV !== 'test') {
-        app.use(session({
-            // name: uuid.v4(),
-            name: "SESSION_ID",
-            secret: privateKey,
-            resave: false,
-            saveUninitialized: true,
-            unset: 'destroy',
-            store: new FileStore({
-                path: path.resolve(__dirname, '../tmp')
-            }),
-            cookie: {
-                sameSite: true,
-                domain: useDomainForCookies ? host : undefined
-            }
-        }));
-    }
-
-    app.use(cookieParser());
-
-    app.use(bodyParser.urlencoded({extended: false, limit: '100mb'}));
-    app.use(bodyParser.json({ extended: true, limit: '100mb' }));
-
-    app.use(methodOverride('X-HTTP-Method-Override'));
-    app.use(express.static(path.join(__dirname, 'public')));
-    app.use(express.static("doc"));
-
-    app.use(compression());
+class AppModule {
     
-    const corsMiddleware = CORS({origin: corsOptions, preflightContinue: true})
-    app.use(corsMiddleware);
-    app.options('*', corsMiddleware);    
+    constructor() {
+        this.initialize();
+        return app;
+    }
 
-    app.use((req, res, next) => {
-        // Website you wish to allow to connect
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        // Request methods you wish to allow
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-        // Request headers you wish to allow
-        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-        // Set to true if you need the website to include cookies in the requests sent
-        // to the API (e.g. in case you use sessions)
-        res.setHeader('Access-Control-Allow-Credentials', false);
-        // Pass to next layer of middleware
-        next();
-    });
-    app.disable('x-powered-by');
+    initialize() {        
+        this.configs();
+    }
+
+    configs() {
+        if (process.env.NODE_ENV !== 'test') {
+            app.use(session({
+                // name: uuid.v4(),
+                name: "SESSION_ID",
+                secret: privateKey,
+                resave: false,
+                saveUninitialized: true,
+                unset: 'destroy',
+                store: new FileStore({
+                    path: path.resolve(__dirname, '../tmp')
+                }),
+                cookie: {
+                    sameSite: true,
+                    domain: useDomainForCookies ? host : undefined
+                }
+            }));
+        }
     
-    app.post('/api/authenticate', Auth);
+        app.use(cookieParser());
+    
+        app.use(bodyParser.urlencoded({extended: false, limit: '100mb'}));
+        app.use(bodyParser.json({ extended: true, limit: '100mb' }));
+    
+        app.use(methodOverride('X-HTTP-Method-Override'));
+        
+        app.use(express.static('public'));
+        app.use(express.static("doc"));
+    
+        app.use(compression());
+        
+        const corsMiddleware = CORS({origin: corsOptions, preflightContinue: true})
+        app.use(corsMiddleware);
+        app.options('*', corsMiddleware);  
 
-    app.get('/api/document', (req, res) => {
-        res.sendFile(path.resolve(__dirname, '../doc/index.html'));
-    });
-
-    if (process.env.NODE_ENV !== 'test') {
-        app.use(isAuthorized);  
-        app.use('/api/v1', csrfProtection, router);
+        app.use((req, res, next) => {
+            // Website you wish to allow to connect
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            // Request methods you wish to allow
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            // Request headers you wish to allow
+            res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+            // Set to true if you need the website to include cookies in the requests sent
+            // to the API (e.g. in case you use sessions)
+            res.setHeader('Access-Control-Allow-Credentials', false);
+            // Pass to next layer of middleware
+            next();
+        });
+        app.disable('x-powered-by');
+        this.routers();
     }
 
-    if (process.env.NODE_ENV === 'test') {
-        app.use('/api/v1', router);
+    routers () {
+        app.post('/api/authenticate', Auth);
+        console.log('routers')
+        app.get('/login', (req, res) => {
+            res.sendFile(path.resolve(__dirname, '../public/index.html'));
+        });
+
+        app.get('/', (req, res) => {
+            res.json({ message: 'Node BFF' }); 
+        });
+    
+        if (process.env.NODE_ENV !== 'test') {
+            app.use(isAuthorized);  
+            app.use('/api/v1', csrfProtection, router);
+        }
+    
+        if (process.env.NODE_ENV === 'test') {
+            app.use('/api/v1', router);
+        }
+    
+        app.use((req, res) => {
+            res.status(404).json({error: 'Not found'});
+        });
     }
-
-    app.use((req, res) => {
-        res.status(404).json({error: 'Not found'});
-    });
-
-    return app;
 }
-
-module.exports = appModule();
+module.exports = new AppModule();
