@@ -3,7 +3,8 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const Error = require('./Errors');
 
-const IsAuthorized = (req, res, next) => {  
+const IsAuthorized = (req, res, next) => { 
+	
 	if (typeof req.headers['x-access-token'] !== "undefined" || req.cookies['x-access-token'] !== "undefined") {
 		// retrieve the authorization header and parse out the
 		// JWT using the split function

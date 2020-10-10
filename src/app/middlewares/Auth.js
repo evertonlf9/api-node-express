@@ -6,7 +6,7 @@ const path = require('path');
 
 const Auth = (req, res, next) => {
     const data = req.body;
-    
+  
     if((!data.username || !data.password) || (data.username === "" || data.password === "")) {
         return res.status(422).json({ error: '', message:"", response: []})
     }

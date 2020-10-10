@@ -1,92 +1,79 @@
 const socket_IO = require('socket.io');
+const cookie = require('cookie');
+
 const {generateMessage, generateLocationMessage} = require('./utils/message');
 const {isRealString} = require('./utils/isRealString');
+const Messages = require('./utils/messages');
 const {Users} = require('./utils/users');
 
 let users = new Users();
-let instanceSocket = null;
-let instanceIO = null;
+let self;
 
+//https://socket.io/docs/
 class SocketIO {
 
-    constructor(server) {
-        instanceIO = socket_IO(server);        
-        this.connection();
+    constructor(server, sessionId, store) {
+        this.sessionId = sessionId;
+        this.session_store = store;
+        
+        this.instanceIO = socket_IO(server); 
+        self = this;
+
+        this.connection();        
     }
 
     connection() {
-        // instanceIO.set('authorization', this.authorization);
+        self.instanceIO.set('authorization', this.authorization.bind(this));
 
-        instanceIO.on('connection', (socket) => {
-            instanceSocket = socket;
+        self.instanceIO.on('connection', (client) => {
+            self.instanceClient = client;
+
             console.log("A new user just connected");
-            instanceSocket.on('join', this.join);
-            instanceSocket.on('createMessage', this.createMessage);
-            instanceSocket.on('createLocationMessage', this.createLocationMessage);
-            instanceSocket.on('disconnect', this.disconnect);
+            // instanceClient.on('join', this.join);
+            // instanceClient.on('createMessage', this.createMessage);
+            this.messages = new Messages(self.instanceClient, self.instanceIO, users); 
+
+            self.instanceClient.on('createLocationMessage', this.createLocationMessage);
+            self.instanceClient.on('disconnect', this.disconnect);
         })
     }
 
     authorization(data, accept) {
-        console.log(data, accept);
 
-        cookie(data, {}, (err) => {
-          if (!err) {
-            var sessionID = data.signedCookies[KEY];
-            store.get(sessionID, (err, session) => {
-              if (err || !session) {
-                accept(null, false);
-              } else {
-                data.session = session;
-                accept(null, true);
-              }
-            });
-          } else {
-            accept(null, false);
-          }
-        });
-    }
-
-    join(params, callback) {
-        if(!isRealString(params.name) || !isRealString(params.room)){
-            return callback('Name and room are required');
-        }
-    
-        this.join(params.room);
-        users.removeUser(instanceSocket.id);
-        users.addUser(instanceSocket.id, params.name, params.room);
+        const cookie_string = data.headers.cookie;
+        const parsed_cookies = cookie.parse(cookie_string);
+        const connect_sid = parsed_cookies[this.sessionId];
         
-        instanceIO.to(params.room).emit('updateUsersList', users.getUserList(params.room));
-        instanceSocket.emit('newMessage', generateMessage('Admin', `Welocome to ${params.room}!`));
-    
-        instanceSocket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', "New User Joined!"));
-    
-        callback();
-    }
+        if (connect_sid) {
+            //TODO: melhorar a maneira de pegar o nome do arquivo do cookie
+            let nameFile = connect_sid.replace('s:', '');
+            nameFile = nameFile.split('.')[0];
 
-    createMessage(message, callback) {
-        let user = users.getUser(instanceSocket.id);
-    
-        if(user && isRealString(message.text)){
-            instanceIO.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+            this.session_store.get(nameFile, (error, session) => {
+                if (error || !session) {
+                    accept(null, false);
+                } else {
+                    data.session = session;
+                    accept(null, true);
+                }
+            });
         }
-        callback('This is the server:');
     }
 
     createLocationMessage(coords) {
-        let user = users.getUser(instanceSocket.id);
+        let user = users.getUser(self.instanceClient.id);
     
         if(user){
-            instanceIO.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.lat, coords.lng))
+            self.instanceIO.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.lat, coords.lng))
         }
     }
 
     disconnect () {
-        let user = users.removeUser(instanceSocket.id);
+        let user = users.removeUser(self.instanceClient.id);
     
         if(user){
-            instanceIO.to(user.room).emit('updateUsersList', users.getUserList(user.room));
-            instanceIO.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left ${user.room} chat room.`))
+            self.instanceIO.to(user.room).emit('updateUsersList', users.getUserList(user.room));
+            self.instanceIO.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left ${user.room} chat room.`))
         }
     }
 

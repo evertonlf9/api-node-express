@@ -4,6 +4,7 @@ const Errors = require('../middlewares/Errors');
 //https://express-validator.github.io/docs/
 //https://express-validator.github.io/docs/custom-validators-sanitizers.html
 //https://express-validator.github.io/docs/check-api.html
+// https://auth0.com/blog/express-validator-tutorial/
 
 class UserValidator {
     
@@ -71,11 +72,14 @@ class UserValidator {
     static GetUsers() {
         return {
             validations: [
-                query('page').if(query('page').exists())
+                query('page').optional()
+                .if(query('page').exists())
                 .isNumeric(),
-                query('size').if(query('size').exists())
+                query('size').optional()
+                .if(query('size').exists())
                 .isNumeric(),
-                query('search').if(query('search').exists())
+                query('search').optional()
+                .if(query('search').exists())
                 .isString()
                 .trim()
                 .isLength({ min: 0, max: 255 })

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Join | ChatApp</title>
+    <meta name="viewport" content="width=device-width, inital-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="/css/styles.css">
+  </head>
+  <body class="centered-form">
+    <div class="centered-form__form">
+      <form>
+        <div class="form-field"><h3>Join Chat</h3></div>
+        <div class="form-field">
+          <label>Login</label>
+          <input id="username" type="text" name="username" autofocus>
+        </div>
+        <div class="form-field">
+          <label>Senha</label>
+          <input id="password" type="password" name="password" autofocus>
+        </div>
+        <div class="form-field">
+          <button id="login" type="button">Join</button>
+        </div>
+      </form>
+    </div>
+    <script>
+      (function(){
+        document.getElementById('login').addEventListener('click', function() {
+          var data = {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+          }
+
+          var myHeaders = new Headers();
+
+          myHeaders.set('Content-type', "application/json");
+
+          var myInit = { method: 'POST',
+               headers: myHeaders,
+               mode: 'cors',
+               body: JSON.stringify(data),
+               cache: 'default' };
+
+          fetch('/api/authenticate', myInit).then(function(response) {
+            return response.json();
+          }).then(function(data) {
+           console.log(data);
+           window.location.href = '/users.html'
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

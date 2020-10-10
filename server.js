@@ -8,7 +8,7 @@ const  port = require('./src/config/port');
 const nodeApiDocGenerator = require('node-api-doc-generator');
 
 nodeApiDocGenerator(app,'http://localhost', port().SERVER);
-connnectdb.connect();
+// connnectdb.connect();
 
 
 if (process.env.SSL_ENABLED === 'true') {
@@ -18,12 +18,12 @@ if (process.env.SSL_ENABLED === 'true') {
     };
 
     const server =  https.createServer(sslOptions, app);
-    const socket = new SocketIO(server);
+    const socket = new SocketIO(server, 'SESSION_ID', app.getStore());
     server.listen(port().SERVER);
 
 }else {
     const server = app.listen(port().SERVER, (error, port) => {
         console.log(`Servidor rodando na porta 3000`);
     });
-    const socket = new SocketIO(server);
+    const socket = new SocketIO(server, 'SESSION_ID', app.getStore());
 }

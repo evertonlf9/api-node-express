@@ -4,13 +4,15 @@ const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const methodOverride = require('method-override');
 const fs = require('fs')
-// const passport = require('passport');
+
 const CORS = require('cors');
 const path = require('path');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const csrf = require('csurf');
-const uuid = require('uuid');
+
+// const uuid = require('uuid');
+// const passport = require('passport');
 
 const router = require('./app/routers');
 const corsOptions = require('./config/cors.config');
@@ -20,6 +22,10 @@ const Auth = require('./app/middlewares/Auth');
 const app = express();
 const useDomainForCookies = process.env.DOMAIN || false
 const host = process.env.HOST || 'localhost'
+
+const store = new FileStore({
+    path: path.resolve(__dirname, '../tmp')
+});
 
 const privateKey = fs.readFileSync(path.resolve(__dirname, '../public/private.pem'), 'utf8');
 const csrfProtection = csrf({
@@ -35,7 +41,12 @@ class AppModule {
     
     constructor() {
         this.initialize();
+        app.getStore = this.getStore;
         return app;
+    }
+
+    getStore() {
+        return store;
     }
 
     initialize() {        
@@ -51,9 +62,7 @@ class AppModule {
                 resave: false,
                 saveUninitialized: true,
                 unset: 'destroy',
-                store: new FileStore({
-                    path: path.resolve(__dirname, '../tmp')
-                }),
+                store: store,
                 cookie: {
                     sameSite: true,
                     domain: useDomainForCookies ? host : undefined
@@ -63,9 +72,9 @@ class AppModule {
     
         app.use(cookieParser());
     
-        app.use(bodyParser.urlencoded({extended: false, limit: '100mb'}));
+        app.use(bodyParser.urlencoded({extended: true, limit: '100mb'}));
         app.use(bodyParser.json({ extended: true, limit: '100mb' }));
-    
+
         app.use(methodOverride('X-HTTP-Method-Override'));
         
         app.use(express.static('public'));
@@ -96,9 +105,17 @@ class AppModule {
 
     routers () {
         app.post('/api/authenticate', Auth);
-        console.log('routers')
+        
         app.get('/login', (req, res) => {
             res.sendFile(path.resolve(__dirname, '../public/index.html'));
+        });
+
+        app.get('/teste', (req, res) => {
+            res.sendFile(path.resolve(__dirname, '../public/teste.html'));
+        });
+
+        app.get('/users', (req, res) => {
+            res.sendFile(path.resolve(__dirname, '../public/users.html'));
         });
 
         app.get('/', (req, res) => {

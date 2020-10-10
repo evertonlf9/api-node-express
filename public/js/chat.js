@@ -71,6 +71,14 @@ socket.on('newLocationMessage', function(message) {
   scrollToBottom();
 });
 
+/*Received private messages*/
+// socket.on('private',function(data){
+//   var username = data.username;
+//   var message = data.message;
+
+//   alert(username+': '+message);
+// });
+
 document.querySelector('#submit-btn').addEventListener('click', function(e) {
   e.preventDefault();
 

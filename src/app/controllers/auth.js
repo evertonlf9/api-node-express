@@ -25,12 +25,12 @@ const Auth = (req, res, privateKey) => {
     };
 
     UserRepository.query(sql, queryTypes)
-    .then((result) => {        
-        
+    .then((result) => {      
         if(result.rows) {
             const data = {...result.rows[0]}; 
-            
+
             if(data.password === req.body.password) {
+
                 const token = jwt.sign({
                     exp: Math.floor(Date.now() / 1000) + (60 * 60),
                     data: delete data.password
@@ -38,16 +38,17 @@ const Auth = (req, res, privateKey) => {
                 privateKey, 
                 { algorithm: 'HS256'});
                 
-                res.cookie('x-access-token', token, { httpOnly: true, secure: true, signed: true });
+                res.cookie('x-access-token', token);
+                // res.cookie('x-access-token', token, { httpOnly: true, secure: true }); //for https
                 res.setHeader('x-access-token', `Bearer ${token}`);
 
-                return res.send({message: "successfull authentication"});            
+                return res.send({message: "successfull authentication", response: data});            
             }
         }
 
-        return res.json({ error: "", message:"", response: []})
+        return res.json({ error: {}, message:"authentication failed", response: []})
     })
-    .catch((err) => res.json({ error: err, message:"error", response: []}));
+    .catch((err) => res.status(403).json({ error: err, message:"authentication failed", response: []}));
     
 }
 module.exports = Auth;
